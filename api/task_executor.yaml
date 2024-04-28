@@ -1,0 +1,218 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Task Executor Backend API
+paths:
+  /subtask/offer:
+    post:
+      summary: Accept or decline offer to subtask calculation
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                creator_uid:
+                  type: string
+                  format: uuid
+                subtask_uid:
+                  type: string
+                  format: uuid
+                subtask_type:
+                  type: string
+                  example: GRID_SEARCH
+      responses:
+        '200':
+          description: The offer has been handled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subtask_uid:
+                    type: string
+                    format: uuid
+                  verdict:
+                    type: string
+                    enum:
+                      - accept
+                      - decline
+  /subtask/start:
+    post:
+      summary: Start accepted subtask calculation with given parameters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_uid:
+                  type: string
+                  format: uuid
+                params:
+                  type: object
+                  example:
+                    model_type: DecisionTreeClassifier
+                    dataset_config:
+                      magnet_link: magnet:?xt=urn:btih:cc0ef364b990e9bb6863d0d2473dac2f75aecba2&dn=folder
+                      path: data.csv
+                      cols_to_scale:
+                        - age
+                      cols_to_get_dummies:
+                        - gender
+                    subtasks_params:
+                      - criterion: gini
+                        max_depth: 5
+                      - criterion: entropy
+                        max_depth: 6
+      responses:
+        '200':
+          description: Subtask's parameters has been received, calculation has been scheduled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [received]
+        '404':
+          description: Subtask with such uid not registered for calculation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [not found]
+  /subtask/status:
+    post:
+      summary: Get subtask calculation status
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Subtask's processing status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubtaskInfo'
+        '404':
+          description: Subtask with such uid not registered for calculation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    properties:
+                      status:
+                        type: string
+                        enum: [not found]
+  /subtask_list/status:
+    post:
+      summary: Get subtasks with given filters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statuses:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - all
+                      - created
+                      - processing
+                      - success
+                      - error
+                      - timeout
+      responses:
+        '200':
+          description: List of tasks with given filters
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SubtaskInfo'
+  /subtask/result:
+    post:
+      summary: Get subtask's result
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: Subtask's calculation result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  subtask_uid:
+                    type: string
+                    format: uuid
+                  result:
+                    type: object
+                    example:
+                      subtasks_scores:
+                        - score: 0.847
+                          params:
+                            - name: criterion
+                              value: gini
+                            - name: max_value
+                              value: 5
+                        - score: 0.843
+                          params:
+                            - name: criterion
+                              value: entropy
+                            - name: max_depth
+                              value: 6
+        '404':
+          description: Subtask's calculation result with such uid not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [not found]
+components:
+  schemas:
+    SubtaskInfo:
+      type: object
+      properties:
+        status:
+          type: string
+          required: true
+          enum:
+            - created
+            - processing
+            - success
+            - error
+            - timeout
+        created_at:
+          type: string
+          format: date-time

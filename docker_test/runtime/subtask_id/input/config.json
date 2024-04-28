@@ -1,0 +1,18 @@
+{
+  "model_type": "DECISION_TREE_CLASSIFIER",
+  "dataset_config": {
+    "path": "data.csv",
+    "target_column": "LeaveOrNot",
+    "columns_to_scale": [
+      "JoiningYear", "Age", "ExperienceInCurrentDomain"
+    ],
+    "columns_to_get_dummies": [
+      "Education", "Gender", "PaymentTier", "City", "EverBenched"
+    ]
+  },
+  "subtask_params": [
+    {"criterion": "gini", "max_depth": 5},
+    {"criterion": "entropy", "max_depth": 6},
+    {"criterion": "log_loss", "max_depth": 4}
+  ]
+}

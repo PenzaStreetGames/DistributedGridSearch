@@ -1,0 +1,2 @@
+D:\YandexDisk\Univer\VIII_term\DistributedGridSearch\docker_test>docker build . --tag docker_test
+D:\YandexDisk\Univer\VIII_term\DistributedGridSearch\docker_test>docker run -v D:\YandexDisk\Univer\VIII_term\DistributedGridSearch\docker_test\output:/usr/src/app/output docker_test

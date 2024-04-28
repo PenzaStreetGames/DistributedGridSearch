@@ -1,0 +1,165 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Task Controller Backend API
+paths:
+  /ping:
+    get:
+      summary: Ping handler
+      responses:
+        '200':
+          description: Successful ping
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+  /task/create:
+    post:
+      summary: Create task with given params
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_type:
+                  type: string
+                  example: GRID_SEARCH
+                params:
+                  type: object
+                  example:
+                    model_type: DecisionTreeClassifier
+                    dataset_config:
+                      path: data.csv
+                      cols_to_scale:
+                        - age
+                      cols_to_get_dummies:
+                        - gender
+                dataset_path:
+                  type: string
+                  example: path/to/dataset/folder
+      responses:
+        '200':
+          description: 'Task creation has been started'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  task_uid:
+                    type: string
+                    format: uuid
+        '400':
+          description: 'Task has invalid parameters'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    enum:
+                      - 'unknown task type'
+                      - 'dataset path does not exists'
+                      - 'task params validation failed'
+  /subtask/result_hook:
+    post:
+      summary: Result hook handler
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_id:
+                  type: string
+                  format: uuid
+                worker_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: The request has been handled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+  /task_list:
+    post:
+      summary: Get tasks list with given filters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+
+      responses:
+        '200':
+          description: Lisf of tasks
+  /task/subtask_list/:
+    post:
+      summary: Get subtasks list of given task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: ''
+        '404':
+          description: ''
+  /task_list/subtask_list/:
+    post:
+      summary: Get tasks and their subtasks with given filters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: ''
+  /task/status:
+    post:
+      summary: Get status of the task with given uid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: ''
+        '404':
+          description: ''
+  /subtask/status:
+    post:
+      summary: Get status of the subtask with given uid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        '200':
+          description: ''
+        '404':
+          description: ''

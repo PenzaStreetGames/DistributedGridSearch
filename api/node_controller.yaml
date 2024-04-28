@@ -1,0 +1,225 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Data Controller Backend API
+paths:
+  /nodes/active:
+    post:
+      summary: 'Get active known nodes'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                roles:
+                  type: array
+                  items:
+                    type: string
+                    enum: [all, executor, creator, registry]
+      responses:
+        '200':
+          description: 'List of known active nodes'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/NodeInfo'
+  /nodes/exchange:
+    post:
+      summary: 'Exchange list of known active nodes with other registry node'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                known_nodes:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/NodeInfo'
+      responses:
+        '200':
+          description: 'Exchange has been accepted'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  known_nodes:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/NodeInfo'
+  /nodes/join:
+    post:
+      summary: 'Request to join a computing cluster'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ip:
+                  type: string
+                  format: ipv4
+                port:
+                  type: integer
+                  minimum: 0
+                  maximum: 65535
+                role:
+                  type: string
+                  enum: [ executor, creator, registry ]
+      responses:
+        '200':
+          description: 'Request has been accepted'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  node_uid:
+                    type: string
+                    format: uuid
+  /nodes/leave:
+    post:
+      summary: 'Request an exit from computing cluster'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                node_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Node with given uid has been excluded from cluster'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  message:
+                    type: string
+                    example: node with given uid has been excluded from cluster
+        '404':
+          description: 'Node with such uid does not exists'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: node with such uid does not exists
+  /nodes/enable:
+    post:
+      summary: 'Notify about node activation'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                node_uid:
+                  type: string
+                  format: uuid
+                ip:
+                  type: string
+                  format: ipv4
+                port:
+                  type: integer
+                  minimum: 0
+                  maximum: 65535
+      responses:
+        '200':
+          description: 'Notification has been handled'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+        '404':
+          description: 'Node with such uid does not exists'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: node with such uid does not exists
+  /nodes/disable:
+    post:
+      summary: 'Notify about node deactivation'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                node_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Notification has been handled'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+        '404':
+          description: 'Node with such uid does not exists'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: node with such uid does not exists
+components:
+  schemas:
+    NodeInfo:
+      type: object
+      properties:
+        node_uid:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [ active, inactive ]
+        ip:
+          type: string
+          format: ipv4
+        port:
+          type: integer
+          minimum: 0
+          maximum: 65535
+        role:
+          type: string
+          enum: [ executor, creator, registry ]
+        last_ping:
+          type: string
+          format: date-time

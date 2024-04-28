@@ -1,0 +1,3 @@
+protocol_version: 1.0
+subtask:
+  name: GRID_SEARCH

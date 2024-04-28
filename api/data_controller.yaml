@@ -1,0 +1,204 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Data Controller Backend API
+paths:
+  /data/create:
+    post:
+      summary: 'Create torrent-distributable dataset from folder with file'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                path:
+                  type: string
+                  example: path/to/dataset/folder
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  dataset_uid:
+                    type: string
+                    format: uuid
+                  magnet_link:
+                    type: string
+                    format: uri
+                    example: 'magnet:?xt=urn:btih:cc0ef364b990e9bb6863d0d2473dac2f75aecba2&dn=folder'
+                  destination:
+                    type: string
+                    example: internal/path/to/dataset/folder
+        '400':
+          description: 'Dataset source path does not exists'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'dataset source path does not exists'
+  /data/publish:
+    post:
+      summary: 'Publish magnet link via torrent client'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataset_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Magnet link successfully published'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+        '404':
+          description: Dataset with such uid not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: dataset with such uid not found
+        '503':
+          description: 'Local Torrent client unavailable'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: torrent client unavailable
+  /data/download:
+    post:
+      summary: 'Download dataset by magnet link via torrent client'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                magnet_link:
+                  type: string
+                  format: uri
+                  example: magnet:?xt=urn:btih:cc0ef364b990e9bb6863d0d2473dac2f75aecba2&dn=folder
+      responses:
+        '200':
+          description: 'Dataset downloading has been started'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  message:
+                    type: string
+                    example: dataset downloading has been started
+                  dataset_uid:
+                    type: string
+                    format: uuid
+        '400':
+          description: 'Torrent from magnet link invalid or unavailable'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: torrent from magnet link invalid or unavailable
+        '503':
+          description: 'Local Torrent client unavailable'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: torrent client unavailable
+  /data/status:
+    post:
+      summary: 'Get status of dataset'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                dataset_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Dataset info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataset_uid:
+                    type: string
+                    format: uuid
+                  magnet_link:
+                    type: string
+                    format: uri
+                    example: magnet:?xt=urn:btih:cc0ef364b990e9bb6863d0d2473dac2f75aecba2&dn=folder
+                  status:
+                    type: string
+                    enum:
+                      - created
+                      - publishing
+                      - downloading
+                      - available
+                  destination:
+                    type: string
+                    example: internal/path/to/dataset/folder
+        '404':
+          description: 'Dataset with such uid does not exists'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: dataset with such uid does not exists
+

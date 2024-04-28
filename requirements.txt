@@ -1,0 +1,9 @@
+checksumdir
+dacite
+fastapi
+pydantic
+setuptools
+uvicorn
+pandas
+PyYAML
+scikit-learn
