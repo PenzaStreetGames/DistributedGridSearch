@@ -1,9 +1,6 @@
 import asyncio
 import base64
-from copy import copy
 from enum import StrEnum
-from datetime import datetime
-import io
 import pathlib
 from typing import Any
 from typing import Optional
@@ -17,7 +14,6 @@ from pydantic import BaseModel
 from pydantic import Field
 from pydantic import HttpUrl
 from pydantic import UUID4
-import requests
 import sklearn.model_selection
 from sklearn.tree import DecisionTreeClassifier
 

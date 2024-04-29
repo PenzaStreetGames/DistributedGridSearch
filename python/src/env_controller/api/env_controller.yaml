@@ -1,0 +1,332 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Environment Controller Backend API
+paths:
+  /image/push:
+    post:
+      summary: 'Build task docker image from sources and publish it to dockerhub'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_type:
+                  type: string
+                  example: GRID_SEARCH
+      responses:
+        '200':
+          description: 'Task environment publication has been started'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  image_tag:
+                    type: string
+                    example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+                  pushing_status:
+                    type: string
+                    enum:
+                      - creating
+                      - building
+                      - building_error
+                      - pushing
+                      - pushing_error
+                      - pushed
+        '404':
+          description: 'Given task type not supported'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: 'given task type not supported'
+        '400':
+          description: 'Task has invalid properties'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: 'task has invalid properties'
+  /image/push/status:
+    post:
+      summary: 'Get task image pushing status'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image_tag:
+                  type: string
+                  example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+      responses:
+        '200':
+          description: 'Image pushing info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  image_tag:
+                    type: string
+                    example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+                  publishing_status:
+                    type: string
+                    enum:
+                      - creating
+                      - building
+                      - building_error
+                      - pushing
+                      - pushing_error
+                      - pushed
+        '404':
+          description: 'Info about publishing an image with the given tag was not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: 'info about publishing an image with the given tag was not found'
+  /image/pull:
+    post:
+      summary: 'Start pulling image from dockerhub'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image_tag:
+                  type: string
+                  example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+      responses:
+        '200':
+          description: 'Pulling image has been started'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  image_tag:
+                    type: string
+                    example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+                  pulling_status:
+                    type: string
+                    enum:
+                      - pulling
+                      - pulling_error
+                      - pulled
+        '400':
+          description: 'Invalid image tag format'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    example: 'invalid image tag format'
+  /image/pull/status:
+    post:
+      summary: 'Get task image pulling status'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image_tag:
+                  type: string
+                  example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+      responses:
+        '200':
+          description: 'Image pulling info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ success ]
+                  image_tag:
+                    type: string
+                    example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+                  pulling_status:
+                    type: string
+                    enum:
+                      - pulling
+                      - pulling_error
+                      - pulled
+        '404':
+          description: 'Info about publishing an image with the given tag was not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: 'info about publishing an image with the given tag was not found'
+  /container/run:
+    post:
+      summary: 'Run container with given image tag and parameters'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image_tag:
+                  type: string
+                  example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+                subtask_uid:
+                  type: string
+                  format: uuid
+                input_files:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                        example: /path/to/file
+      responses:
+        '200':
+          description: 'Container running has been started'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  subtask_uid:
+                    type: string
+                    format: uuid
+                  running_status:
+                    type: string
+                    enum:
+                      - file_copying
+                      - running
+                      - success
+                      - timeout
+                      - error
+  /container/status:
+    post:
+      summary: 'Get container running status'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Container running info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ success ]
+                  subtask_uid:
+                    type: string
+                    format: uuid
+                  running_status:
+                    type: string
+                    enum:
+                      - file_copying
+                      - running
+                      - success
+                      - timeout
+                      - error
+        '404':
+          description: 'Info about running a container with the given tag was not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: 'info about running a container with the given tag was not found'
+  /container/result:
+    post:
+      summary: 'Get result of container running'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Container running result info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  subtask_uid:
+                    type: string
+                    format: uuid
+                  result_file:
+                    type: string
+                    example: /path/to/result/file
+        '404':
+          description: 'Container running result with given subtask_uid not found'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: 'container running result with given subtask_uid not found'

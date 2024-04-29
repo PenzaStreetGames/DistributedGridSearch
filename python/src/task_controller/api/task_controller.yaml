@@ -1,0 +1,315 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: Task Controller Backend API
+paths:
+  /ping:
+    get:
+      summary: Ping handler
+      responses:
+        '200':
+          description: Successful ping
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: OK
+  /task/create:
+    post:
+      summary: Create task with given params
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_type:
+                  type: string
+                  example: GRID_SEARCH
+                params:
+                  type: object
+                  example:
+                    model_type: DecisionTreeClassifier
+                    dataset_config:
+                      path: data.csv
+                      cols_to_scale:
+                        - age
+                      cols_to_get_dummies:
+                        - gender
+                dataset_path:
+                  type: string
+                  example: path/to/dataset/folder
+      responses:
+        '200':
+          description: 'Task creation has been started'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+                  task_uid:
+                    type: string
+                    format: uuid
+        '400':
+          description: 'Task has invalid parameters'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [failure]
+                  message:
+                    type: string
+                    enum:
+                      - 'unknown task type'
+                      - 'dataset path does not exists'
+                      - 'task params validation failed'
+  /subtask/result_hook:
+    post:
+      summary: Result hook handler
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_id:
+                  type: string
+                  format: uuid
+                worker_id:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: The request has been handled
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [success]
+  /tasks_list:
+    post:
+      summary: Get tasks list with given filters
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                statuses:
+                  type: array
+                  items:
+                    type: string
+                    enum:
+                      - all
+                      - created
+                      - processing
+                      - success
+                      - error
+                      - timeout
+      responses:
+        '200':
+          description: Lisf of tasks
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: object
+                    enum: [ success ]
+                  tasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/TaskInfo'
+  /task/subtasks_list/:
+    post:
+      summary: Get subtasks list of given task
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Subtasks info of the task with given uid'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ success ]
+                  subtasks:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/SubtaskInfo'
+        '404':
+          description: Task with given uid not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: task with given uid not found
+  /task/:
+    post:
+      summary: Get info about the task with given uid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                task_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Task info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ success ]
+                  task:
+                    $ref: '#/components/schemas/TaskInfo'
+        '404':
+          description: Task with given uid not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: task with given uid not found
+  /subtask/:
+    post:
+      summary: Get info about the subtask with given uid
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                subtask_uid:
+                  type: string
+                  format: uuid
+      responses:
+        '200':
+          description: 'Subtask info'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ success ]
+                  task:
+                    $ref: '#/components/schemas/SubtaskInfo'
+        '404':
+          description: Subtask with given uid not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    enum: [ failure ]
+                  message:
+                    type: string
+                    example: subtask with given uid not found
+components:
+  schemas:
+    TaskInfo:
+      type: object
+      properties:
+        task_uid:
+          type: string
+          format: uuid
+        creator_uid:
+          type: string
+          format: uuid
+        subtasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SubtaskInfo'
+        status:
+          type: string
+          enum:
+            - creating
+            - executors_searching
+            - resources_publishing
+            - subtasks_sending
+            - subtasks_polling
+            - result_processing
+            - success
+            - error
+        created_at:
+          type: string
+          format: date-time
+        duration:
+          type: string
+          format: duration
+        result:
+          type: object
+          nullable: true
+    SubtaskInfo:
+      type: object
+      properties:
+        subtask_uid:
+          type: string
+          format: uuid
+        worker_uid:
+          type: string
+          format: uuid
+          nullable: true
+        status:
+          type: string
+          enum:
+            - waiting_executor_assignment
+            - creating
+            - resources_downloading
+            - running
+            - success
+            - error
+            - timeout
+        created_at:
+          type: string
+          format: date-time
+        duration:
+          type: string
+          format: duration
+        result:
+          type: object
+          nullable: true

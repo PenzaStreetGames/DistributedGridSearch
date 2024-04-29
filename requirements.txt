@@ -2,7 +2,10 @@ checksumdir
 dacite
 fastapi
 pydantic
+PyQt5
+python-qbittorrent
 setuptools
+torrentool
 uvicorn
 pandas
 PyYAML

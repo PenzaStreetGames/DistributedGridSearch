@@ -5,7 +5,7 @@ import sys
 class Ui(QtWidgets.QMainWindow):
     def __init__(self):
         super(Ui, self).__init__()
-        uic.loadUi('../DistributedGridSearch.ui', self)
+        uic.loadUi('../forms/DistributedGridSearch.ui', self)
         self.show()
 
 

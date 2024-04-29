@@ -1,7 +1,0 @@
-version: "3"
-services:
-  server:
-    build: python
-    restart: always
-    ports:
-      - "8000:80"

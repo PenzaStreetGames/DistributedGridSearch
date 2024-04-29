@@ -13,7 +13,7 @@ def extract_subtask_name(task_path: pathlib.Path) -> str:
 def build_image(client: docker.DockerClient, task_path: pathlib.Path) -> str:
     subtask_name = extract_subtask_name(task_path / 'subtask.yaml').lower()
     subtask_checksum = checksumdir.dirhash(task_path, hashfunc='md5')
-    tag = f'{subtask_name}:{subtask_checksum}'
+    tag = f'penzastreet/{subtask_name}:{subtask_checksum}'
     print(f'building image {tag}...')
     client.images.build(
         path=str(task_path.parent),
@@ -29,7 +29,7 @@ def run_container(
     input_path: pathlib.Path,
     output_path: pathlib.Path,
 ) -> None:
-    params = f'{{tag: {tag}, input {input_path}, output: {output_path}}}',
+    params = f'tag: {tag}, input {input_path}, output: {output_path}',
     print(f'running container {params}')
     client.containers.run(
         image=tag,
@@ -41,14 +41,10 @@ def run_container(
     print(f'container {params} has been finished')
 
 
-def push_image(client: docker.DockerClient, tag: str) -> str:
-    image = client.images.get(tag)
-    tag_for_push = f'penzastreet/{tag}'
-    image.tag(f'penzastreet/{tag}')
-    print(f'pushing image {tag_for_push} to dockerhub')
-    client.images.push(repository=tag_for_push)
-    print(f'image {tag_for_push} has been pushed to dockerhub')
-    return tag_for_push
+def push_image(client: docker.DockerClient, tag: str) -> None:
+    print(f'pushing image {tag} to dockerhub')
+    client.images.push(repository=tag)
+    print(f'image {tag} has been pushed to dockerhub')
 
 
 def pull_image(client: docker.DockerClient, tag: str) -> None:
@@ -64,9 +60,9 @@ def main():
     input_path = runtime_path / 'input'
     output_path = runtime_path / 'output'
     tag = build_image(client, task_path)
-    tag_for_push = push_image(client, tag)
-    pull_image(client, tag_for_push)
-    run_container(client, tag_for_push, input_path, output_path)
+    push_image(client, tag)
+    pull_image(client, tag)
+    run_container(client, tag, input_path, output_path)
 
 
 if __name__ == '__main__':
