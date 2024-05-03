@@ -208,11 +208,13 @@ components:
           type: string
           required: true
           enum:
+            - waiting_params
             - created
             - processing
             - success
             - error
             - timeout
+            - cancelled
         created_at:
           type: string
           format: date-time

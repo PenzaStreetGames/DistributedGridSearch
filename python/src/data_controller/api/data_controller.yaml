@@ -5,7 +5,7 @@ info:
 paths:
   /data/publish:
     post:
-      summary: 'Create torrent-distributable dataset from folder with file and publish it's magnet link via torrent client'
+      summary: 'Create torrent-distributable dataset from folder with file and publish its magnet link via torrent client'
       requestBody:
         content:
           application/json:
