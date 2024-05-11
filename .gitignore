@@ -1,3 +1,13 @@
+# .sqlite database files
+*.sqlite
+
+# data_controller
+python/src/data_controller/torrents
+python/src/data_controller/datasets
+# env_controller
+python/src/env_controller/runtime
+
+
 ### PyCharm template
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839

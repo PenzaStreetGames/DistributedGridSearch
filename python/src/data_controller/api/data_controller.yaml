@@ -64,6 +64,9 @@ paths:
             schema:
               type: object
               properties:
+                dataset_uid:
+                  type: string
+                  format: uuid
                 magnet_link:
                   type: string
                   format: uri
@@ -111,7 +114,7 @@ paths:
                   message:
                     type: string
                     example: torrent client unavailable
-  /data/status:
+  /data:
     post:
       summary: 'Get status of dataset'
       requestBody:

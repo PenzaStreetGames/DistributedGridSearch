@@ -116,7 +116,7 @@ paths:
                 properties:
                   status:
                     type: string
-                    enum: [ failure ]
+                    enum: [failure]
                   message:
                     type: string
                     example: node with such uid does not exists

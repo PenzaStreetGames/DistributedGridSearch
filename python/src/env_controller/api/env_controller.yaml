@@ -87,7 +87,7 @@ paths:
                   image_tag:
                     type: string
                     example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
-                  publishing_status:
+                  pushing_status:
                     type: string
                     enum:
                       - creating

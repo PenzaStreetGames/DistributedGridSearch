@@ -8,7 +8,7 @@ CREATE TABLE node_role (
     name VARCHAR(64)
 );
 
-CREATE TABLE nodes (
+CREATE TABLE node_info (
     node_uid VARCHAR(36) PRIMARY KEY, -- uuid
     ipv4_address VARCHAR(21), -- 255.255.255.255:65535
     last_ping VARCHAR(23), -- YYYY-MM-DD HH:MM:SS.SSS
