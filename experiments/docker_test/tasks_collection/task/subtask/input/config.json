@@ -1,0 +1,12 @@
+{
+  "model_type": "RANDOM_FOREST_CLASSIFIER",
+  "dataset_config": {
+    "path": "data.csv",
+    "target_column": "label",
+    "columns_to_scale": [],
+    "columns_to_get_dummies": []
+  },
+  "subtask_params": [
+    {}
+  ]
+}

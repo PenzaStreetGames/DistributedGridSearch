@@ -1,5 +1,6 @@
 import enum
 from typing import Optional
+import uuid
 
 import pydantic.networks
 
@@ -39,6 +40,20 @@ class Node(pydantic.BaseModel):
 
 class Nodes(pydantic.BaseModel):
     nodes: list[Node]
+
+
+class HandshakeRequest(pydantic.BaseModel):
+    node_uid: uuid.UUID
+    ip: pydantic.networks.IPv4Address
+    port: int
+    role: core.NodeRole
+
+
+class HandshakeResponse(common_web.BaseResponse):
+    node_uid: uuid.UUID
+    ip: pydantic.networks.IPv4Address
+    port: int
+    role: core.NodeRole
 
 
 class JoinRequest(pydantic.BaseModel):

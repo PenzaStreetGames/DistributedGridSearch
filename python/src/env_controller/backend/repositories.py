@@ -102,15 +102,13 @@ class SubtaskRepository:
             session.execute(stmt)
             session.commit()
 
-    def get_entity(self, subtask_uid: uuid.UUID) -> core.Subtask:
+    def get_entity(self, subtask_uid: uuid.UUID) -> Optional[core.Subtask]:
         with self.db.create_session() as session:
             subtask: Optional[db_models.Subtask] = session.query(
                 db_models.Subtask
             ).where(db_models.Subtask.subtask_uid == str(subtask_uid)).first()
             if subtask is None:
-                raise Exception(
-                    f'subtask with uid {subtask_uid} does not exists',
-                )
+                return None
             return subtask.to_core()
 
     def get_entities(self) -> Iterable[core.Subtask]:
@@ -118,3 +116,15 @@ class SubtaskRepository:
             stmt = sql.select(db_models.Subtask)
             subtasks = session.scalars(stmt).all()
         return [subtask.to_core() for subtask in subtasks]
+
+    def upsert_entity(self, entity: core.Subtask):
+        with self.db.create_session() as session:
+            image: Optional[db_models.Subtask] = session.query(
+                db_models.Subtask
+            ).where(
+                db_models.Subtask.subtask_uid == str(entity.subtask_uid)
+            ).first()
+        if image is None:
+            self.create_entity(entity)
+        else:
+            self.update_entity(entity)

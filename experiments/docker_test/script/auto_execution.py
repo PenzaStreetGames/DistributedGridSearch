@@ -1,4 +1,6 @@
+import datetime
 import pathlib
+import time
 
 import checksumdir
 import docker
@@ -60,9 +62,14 @@ def main():
     input_path = runtime_path / 'input'
     output_path = runtime_path / 'output'
     tag = build_image(client, task_path)
-    push_image(client, tag)
-    pull_image(client, tag)
+    # push_image(client, tag)
+    # pull_image(client, tag)
+    start = time.time()
+    print(f'start at {datetime.datetime.now()}')
     run_container(client, tag, input_path, output_path)
+    end = time.time()
+    print(f'end at {datetime.datetime.now()}')
+    print(end - start)
 
 
 if __name__ == '__main__':

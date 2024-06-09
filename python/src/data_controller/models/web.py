@@ -4,7 +4,7 @@ from typing import Optional
 import src.common.models.web as common_web
 import src.data_controller.models.core as core
 
-MAGNET_LINK_REGEX = r'urn:btih:([A-F\d]+)'
+MAGNET_LINK_REGEX = r'urn:btih:([0-9A-Fa-f\d]+)'
 
 
 class Dataset(pydantic.BaseModel):

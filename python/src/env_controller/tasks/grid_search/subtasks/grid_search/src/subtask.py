@@ -43,7 +43,7 @@ class SeparatedDataset:
 
 @dataclasses.dataclass
 class Output:
-    result: list[float]
+    result: list[dict[str, Any]]
 
 
 def read_config() -> Input:
@@ -76,7 +76,7 @@ def get_dataframe(config: Input) -> pd.DataFrame:
     return df
 
 
-def get_model_class(model_type: ModelType) -> Any:
+def get_model_class(model_type: str) -> Any:
     match model_type:
         case ModelType.DECISION_TREE_CLASSIFIER.name:
             return sklearn.tree.DecisionTreeClassifier
@@ -109,7 +109,7 @@ def get_model_score(
     return f1_score
 
 
-def get_models_scores(config: Input, df: pandas.DataFrame) -> list[float]:
+def get_models_scores(config: Input, df: pandas.DataFrame) -> list[dict]:
     model_class = get_model_class(config.model_type)
     separated_data = separate_data(
         df, config.dataset_config.target_column,
@@ -117,7 +117,7 @@ def get_models_scores(config: Input, df: pandas.DataFrame) -> list[float]:
     result = []
     for params_set in config.subtask_params:
         f1_score = get_model_score(model_class, separated_data, params_set)
-        result.append(f1_score)
+        result.append({'params': params_set, 'f1_score': f1_score})
     return result
 
 

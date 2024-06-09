@@ -16,7 +16,7 @@ class EnvControllerClient(client_base.ClientBase):
         url = self.get_server_url('/image/push')
         request_body = web.ImagePushRequest(
             task_type=task_type, subtask_type=subtask_type,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()
@@ -29,7 +29,7 @@ class EnvControllerClient(client_base.ClientBase):
         url = self.get_server_url('/image/push/status')
         request_body = web.ImagePushStatusRequest(
             image_tag=image_tag,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()
@@ -40,7 +40,7 @@ class EnvControllerClient(client_base.ClientBase):
         url = self.get_server_url('/image/pull')
         request_body = web.ImagePullRequest(
             image_tag=image_tag,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()
@@ -51,7 +51,7 @@ class EnvControllerClient(client_base.ClientBase):
         url = self.get_server_url('/image/pull/status')
         request_body = web.ImagePushStatusRequest(
             image_tag=image_tag,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()
@@ -69,7 +69,7 @@ class EnvControllerClient(client_base.ClientBase):
             subtask_uid=subtask_uid,
             image_tag=image_tag,
             input_files=input_files,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()
@@ -82,7 +82,7 @@ class EnvControllerClient(client_base.ClientBase):
         url = self.get_server_url('/container/status')
         request_body = web.ContainerStatusRequest(
             subtask_uid=subtask_uid,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()
@@ -95,7 +95,7 @@ class EnvControllerClient(client_base.ClientBase):
         url = self.get_server_url('/container/result')
         request_body = web.ContainerResultRequest(
             subtask_uid=subtask_uid,
-        ).model_dump()
+        ).model_dump(mode='json')
         async with aiohttp.ClientSession() as session:
             async with session.post(url, json=request_body) as response:
                 json = await response.json()

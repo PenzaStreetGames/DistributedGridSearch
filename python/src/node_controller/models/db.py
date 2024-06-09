@@ -51,7 +51,7 @@ class Node(Base):
 
     def __repr__(self) -> str:
         return (
-            'NodeInfo('
+            'Node('
             f'node_uid={self.node_uid!r}, '
             f'ipv4_address={self.ipv4_address!r}, '
             f'port={self.port!r}, '
@@ -59,4 +59,3 @@ class Node(Base):
             f'status={self.status!r}, '
             f'last_ping={self.last_ping!r})'
         )
-

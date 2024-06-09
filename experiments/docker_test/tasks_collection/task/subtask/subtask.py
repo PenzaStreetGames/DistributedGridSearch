@@ -1,13 +1,16 @@
 import dataclasses
+import datetime
 import enum
 import json
 import pathlib
+import time
 from typing import Any
 from typing import Type
 
 import dacite
 import pandas
 import pandas as pd
+import sklearn.ensemble
 import sklearn.metrics
 import sklearn.model_selection
 import sklearn.preprocessing
@@ -23,6 +26,7 @@ class Input:
 
 class ModelType(enum.StrEnum):
     DECISION_TREE_CLASSIFIER = 'DecisionTreeClassifier'
+    RANDOM_FOREST_CLASSIFIER = 'RandomForestClassifier'
 
 
 @dataclasses.dataclass
@@ -61,12 +65,16 @@ def preprocess_df(
     df: pandas.DataFrame,
     dataset_config: DatasetConfig,
 ):
-    df[dataset_config.columns_to_scale] = (
-        sklearn.preprocessing.StandardScaler().fit_transform(
-            df[dataset_config.columns_to_scale]
+    if dataset_config.columns_to_scale:
+        df[dataset_config.columns_to_scale] = (
+            sklearn.preprocessing.StandardScaler().fit_transform(
+                df[dataset_config.columns_to_scale]
+            )
         )
-    )
-    df = pandas.get_dummies(df, columns=dataset_config.columns_to_get_dummies)
+    if dataset_config.columns_to_get_dummies:
+        df = pandas.get_dummies(
+            df, columns=dataset_config.columns_to_get_dummies,
+        )
     return df
 
 
@@ -80,6 +88,8 @@ def get_model_class(model_type: ModelType) -> Any:
     match model_type:
         case ModelType.DECISION_TREE_CLASSIFIER.name:
             return sklearn.tree.DecisionTreeClassifier
+        case ModelType.RANDOM_FOREST_CLASSIFIER.name:
+            return sklearn.ensemble.RandomForestClassifier
         case _:
             raise Exception(f'unknown model type {model_type}')
 
@@ -123,8 +133,13 @@ def get_models_scores(config: Input, df: pandas.DataFrame) -> list[float]:
 
 def main():
     config = read_config()
+    start = time.time()
+    print(f'start at {datetime.datetime.now()}')
     df = get_dataframe(config)
     scores = get_models_scores(config, df)
+    end = time.time()
+    print(f'end at {datetime.datetime.now()}')
+    print(end - start)
     result = Output(result=scores)
     write_output(result)
 

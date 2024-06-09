@@ -117,5 +117,5 @@ class ContainerResultRequest(pydantic.BaseModel):
 
 class ContainerResultResponse(common_web.BaseResponse):
     subtask_uid: pydantic.UUID4
-    result_file: pydantic.FilePath
+    result_file: Optional[pydantic.FilePath]
 

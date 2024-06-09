@@ -1,0 +1,13 @@
+{
+  "node_uid": "062fb045-a4fe-456d-aa1d-cb435e4657f2",
+  "role": "creator",
+  "use_upnp": true,
+  "public_ip": "95.84.138.5",
+  "public_port": 50002,
+  "registries": [
+    {
+      "ip": "95.84.138.5",
+      "port": 50000
+    }
+  ]
+}

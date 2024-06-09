@@ -39,6 +39,13 @@ paths:
                         - age
                       cols_to_get_dummies:
                         - gender
+                    subtasks_params:
+                      - "criterion": gini
+                        "max_depth": 5
+                      - "criterion": entropy
+                        "max_depth": 6
+                      - "criterion": log_loss
+                        "max_depth": 4
                 dataset_path:
                   type: string
                   example: path/to/dataset/folder

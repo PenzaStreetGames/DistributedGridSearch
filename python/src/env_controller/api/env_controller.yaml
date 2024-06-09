@@ -15,6 +15,9 @@ paths:
                 task_type:
                   type: string
                   example: GRID_SEARCH
+                subtask_type:
+                  type: string
+                  example: GRID_SEARCH
       responses:
         '200':
           description: 'Task environment publication has been started'

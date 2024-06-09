@@ -66,3 +66,16 @@ class NodeRepository:
                 stmt = stmt.where(db_models.Node.status == status.value)
             nodes = session.scalars(stmt).all()
         return [node.to_core() for node in nodes]
+
+    def upsert_entity(self, entity: core.Node):
+        with self.db.create_session() as session:
+            node: Optional[db_models.Node] = session.query(
+                db_models.Node
+            ).where(
+                db_models.Node.node_uid == str(entity.node_uid)
+            ).first()
+        if node is None:
+            self.create_entity(entity)
+        else:
+            self.update_entity(entity)
+

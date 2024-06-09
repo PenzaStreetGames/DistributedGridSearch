@@ -15,7 +15,6 @@ app = fastapi.FastAPI()
 db_name = str(
     pathlib.Path(__file__).parent.parent / 'db' / 'data_controller.sqlite',
 )
-print(db_name)
 db = database.DB(db_name=db_name, base=db_models.Base)
 dataset_repository = repositories.DatasetRepository(db)
 torrent_service = torrent.TorrentService(dataset_repository)
@@ -30,6 +29,7 @@ def publish_dataset(
     return models.DataPublishResponse(
         status=common_web.ResponseStatus.SUCCESS,
         dataset_uid=dataset.dataset_uid,
+        magnet_link=dataset.magnet_link,
     )
 
 

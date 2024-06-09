@@ -44,6 +44,9 @@ class TorrentService:
     def download_dataset(
         self, dataset_uid: uuid.UUID, magnet_link: str,
     ) -> models.Dataset:
+        dataset = self.dataset_repository.get_entity(dataset_uid)
+        if dataset is not None:
+            return dataset
         dataset_storage_path = self.dataset_storage / str(dataset_uid)
         dataset = models.Dataset(
             dataset_uid=dataset_uid,

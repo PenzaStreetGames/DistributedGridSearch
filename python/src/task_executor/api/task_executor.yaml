@@ -18,9 +18,6 @@ paths:
                 subtask_uid:
                   type: string
                   format: uuid
-                subtask_type:
-                  type: string
-                  example: GRID_SEARCH
       responses:
         '200':
           description: The offer has been handled
@@ -35,8 +32,8 @@ paths:
                   verdict:
                     type: string
                     enum:
-                      - accept
-                      - decline
+                      - accepted
+                      - declined
   /subtask/start:
     post:
       summary: Start accepted subtask calculation with given parameters
@@ -49,13 +46,22 @@ paths:
                 subtask_uid:
                   type: string
                   format: uuid
+                image_tag:
+                  type: string
+                  example: penzastreet/grid_search:66057b7715eebe92946948ab2f2674ef
+                dataset_uid:
+                  type: string
+                  format: uuid
+                magnet_link:
+                  type: string
+                  example: magnet:?xt=urn:btih:cc0ef364b990e9bb6863d0d2473dac2f75aecba2&dn=folder
                 params:
                   type: object
                   example:
                     model_type: DecisionTreeClassifier
                     dataset_config:
-                      magnet_link: magnet:?xt=urn:btih:cc0ef364b990e9bb6863d0d2473dac2f75aecba2&dn=folder
                       path: data.csv
+                      target_column: "LeaveOrNot"
                       cols_to_scale:
                         - age
                       cols_to_get_dummies:

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 info:
   version: 1.0.0
-  title: Data Controller Backend API
+  title: Node Controller Backend API
 paths:
   /nodes/active:
     post:

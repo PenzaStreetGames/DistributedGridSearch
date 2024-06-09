@@ -1,0 +1,13 @@
+{
+  "node_uid": "34823985-7ea9-443c-b597-2964983e645a",
+  "role": "executor",
+  "use_upnp": true,
+  "public_ip": "95.84.138.5",
+  "public_port": 50001,
+  "registries": [
+    {
+      "ip": "95.84.138.5",
+      "port": 50000
+    }
+  ]
+}

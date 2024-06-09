@@ -1,5 +1,10 @@
+# datasets
+datasets/*.csv
 # .sqlite database files
 *.sqlite
+# experiments input
+experiments/docker_test/runtime/subtask_id/input/*
+experiments/docker_test/tasks_collection/task/subtask/input
 
 # data_controller
 python/src/data_controller/torrents

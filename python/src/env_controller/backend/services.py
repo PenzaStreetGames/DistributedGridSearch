@@ -1,7 +1,7 @@
 import json
 import pathlib
 import shutil
-from typing import Any
+from typing import Any, Optional
 import uuid
 
 import checksumdir
@@ -73,7 +73,7 @@ class SubtaskService:
             container_id=None,
             status=models.SubtaskStatus.CREATING
         )
-        self.subtask_repository.create_entity(subtask)
+        self.subtask_repository.upsert_entity(subtask)
         subtask_runtime_dir = self.get_subtask_runtime_dir(subtask.subtask_uid)
         subtask.status = models.SubtaskStatus.FILE_COPYING
         self.subtask_repository.update_entity(subtask)
@@ -107,12 +107,11 @@ class SubtaskService:
 
     def get_subtask_result(
         self, subtask_uid: uuid.UUID,
-    ) -> pathlib.Path:
+    ) -> Optional[pathlib.Path]:
         subtask_runtime_dir = self.get_subtask_runtime_dir(subtask_uid)
         result_file = subtask_runtime_dir / 'output' / 'result.json'
-        assert result_file.exists(), (
-            f'result of subtask {subtask_uid} not ready'
-        )
+        if not result_file.exists():
+            return None
         return result_file
 
     @property
